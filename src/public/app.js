@@ -122,10 +122,10 @@ function updateStats(stats) {
 
 // Controls
 btnStart.onclick = () => {
-    socket.emit('start-shuffle', {
-        rate: rateInput.value,
-        duration: durationInput.value
-    });
+    const rate = parseInt(rateInput.value);
+    const duration = parseInt(durationInput.value);
+    console.log('Iniciando embaralhamento:', { rate, duration });
+    socket.emit('start-shuffle', { rate, duration });
 };
 
 btnPause.onclick = () => socket.emit('pause-shuffle');

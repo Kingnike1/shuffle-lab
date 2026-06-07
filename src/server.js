@@ -47,8 +47,10 @@ io.on('connection', (socket) => {
   socket.emit('stats-update', statsAggregator.getSummary());
 
   socket.on('start-shuffle', (data) => {
-    const { rate, duration } = data;
-    shuffleEngine.start(Number(rate), Number(duration));
+    console.log('Evento start-shuffle recebido:', data);
+    const rate = Number(data.rate) || 10;
+    const duration = Number(data.duration) || 0;
+    shuffleEngine.start(rate, duration);
     reportPersister.start();
   });
 

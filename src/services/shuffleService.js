@@ -33,13 +33,18 @@ export class ShuffleEngine {
 
   start(rate, duration) {
     if (this.isRunning) return;
+    
+    // Validate rate to avoid division by zero or negative intervals
+    const safeRate = Math.max(1, rate);
+    const intervalMs = 1000 / safeRate;
+    
+    console.log(`Iniciando ShuffleEngine: ${safeRate} exec/s, duração: ${duration}s`);
+    
     this.isRunning = true;
-    this.executionsPerSecond = rate;
+    this.executionsPerSecond = safeRate;
     this.duration = duration;
     this.startTime = Date.now();
-    this.statsAggregator.reset(); // Reset stats on new start
-    
-    const intervalMs = 1000 / this.executionsPerSecond;
+    this.statsAggregator.reset();
     
     this.interval = setInterval(() => {
       this.tick();
