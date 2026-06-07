@@ -38,13 +38,16 @@ export class ShuffleEngine {
     const safeRate = Math.max(1, rate);
     const intervalMs = 1000 / safeRate;
     
-    console.log(`Iniciando ShuffleEngine: ${safeRate} exec/s, duração: ${duration}s`);
+    console.log(`Iniciando/Retomando ShuffleEngine: ${safeRate} exec/s, duração: ${duration}s`);
     
     this.isRunning = true;
     this.executionsPerSecond = safeRate;
     this.duration = duration;
-    this.startTime = Date.now();
-    this.statsAggregator.reset();
+    
+    // Only set startTime if it's a fresh start (totalShuffles is 0)
+    if (this.totalShuffles === 0) {
+      this.startTime = Date.now();
+    }
     
     this.interval = setInterval(() => {
       this.tick();
@@ -74,8 +77,16 @@ export class ShuffleEngine {
 
   stop() {
     this.pause();
+    console.log('ShuffleEngine parado. Estatísticas preservadas.');
+    this.io.emit('shuffle-stopped');
+  }
+
+  reset() {
+    this.pause();
     this.totalShuffles = 0;
+    this.startTime = null;
     this.statsAggregator.reset();
-    this.io.emit(\'shuffle-stopped\');
+    console.log('ShuffleEngine resetado. Dados limpos.');
+    this.io.emit('shuffle-reset');
   }
 }

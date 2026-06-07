@@ -62,7 +62,12 @@ io.on('connection', (socket) => {
   socket.on('stop-shuffle', () => {
     shuffleEngine.stop();
     reportPersister.stop();
-    ndjsonLogger.close(); // Close the current NDJSON log file
+  });
+
+  socket.on('reset-shuffle', () => {
+    shuffleEngine.reset();
+    reportPersister.stop();
+    ndjsonLogger.close(); 
   });
 
   socket.on('request-stats', () => {

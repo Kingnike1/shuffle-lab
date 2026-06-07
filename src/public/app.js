@@ -12,6 +12,7 @@ const durationInput = document.getElementById('duration');
 const btnStart = document.getElementById('btnStart');
 const btnPause = document.getElementById('btnPause');
 const btnStop = document.getElementById('btnStop');
+const btnReset = document.getElementById('btnReset');
 const totalShufflesEl = document.getElementById('totalShuffles');
 const uniqueOrdersEl = document.getElementById('uniqueOrders');
 const repetitionsEl = document.getElementById('repetitions');
@@ -129,8 +130,15 @@ btnStart.onclick = () => {
 };
 
 btnPause.onclick = () => socket.emit('pause-shuffle');
-btnStop.onclick = () => {
-    socket.emit('stop-shuffle');
+btnStop.onclick = () => socket.emit('stop-shuffle');
+
+btnReset.onclick = () => {
+    if (confirm('Tem certeza que deseja resetar todos os dados acumulados?')) {
+        socket.emit('reset-shuffle');
+    }
+};
+
+socket.on('shuffle-reset', () => {
     historyBody.innerHTML = '';
     totalShufflesEl.innerText = '0';
     uniqueOrdersEl.innerText = '0';
@@ -138,7 +146,7 @@ btnStop.onclick = () => {
     consecutiveEl.innerText = '0';
     timerEl.innerText = '00h 00m 00s';
     initHeatmap();
-};
+});
 
 document.getElementById('btnStress1000').onclick = () => { rateInput.value = 1000; btnStart.click(); };
 document.getElementById('btnStress5000').onclick = () => { rateInput.value = 5000; btnStart.click(); };
