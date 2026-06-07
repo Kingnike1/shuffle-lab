@@ -55,9 +55,9 @@ export class ShuffleEngine {
     this.statsAggregator.addShuffle(shuffled);
     this.ndjsonLogger.log({ timestamp: Date.now(), shuffle: shuffled });
     
-    this.io.emit(\'shuffle-update\', {
+    this.io.emit('shuffle-update', {
       execution: this.totalShuffles,
-      order: shuffled.join(\'\'),
+      order: shuffled.join(','),
       stats: this.statsAggregator.getSummary()
     });
   }
