@@ -17,7 +17,8 @@ const entropyBadge = document.getElementById('entropyBadge');
 const pairsList = document.getElementById('pairsList');
 const cpuUsageEl = document.getElementById('cpuUsage');
 const memUsageEl = document.getElementById('memUsage');
-const avgTimeEl = document.getElementById('avgTime');
+const diskUsageEl = document.getElementById(\'diskUsage\');
+const avgTimeEl = document.getElementById(\'avgTime\');
 
 const cards = ["dragao", "orc", "mago", "goblin", "elfo", "troll", "arqueiro", "cavaleiro"];
 
@@ -86,6 +87,7 @@ socket.on('stats-update', (stats) => {
 socket.on('system-metrics', (metrics) => {
     cpuUsageEl.innerText = metrics.cpu;
     memUsageEl.innerText = metrics.memory;
+    diskUsageEl.innerText = metrics.disk;
     avgTimeEl.innerText = metrics.avgTime;
 });
 

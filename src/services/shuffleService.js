@@ -19,9 +19,10 @@ export function fisherYatesShuffle(array) {
 }
 
 export class ShuffleEngine {
-  constructor(io, statsService) {
+  constructor(io, statsAggregator, ndjsonLogger) {
     this.io = io;
-    this.statsService = statsService;
+    this.statsAggregator = statsAggregator;
+    this.ndjsonLogger = ndjsonLogger;
     this.isRunning = false;
     this.interval = null;
     this.executionsPerSecond = 1;
@@ -36,6 +37,7 @@ export class ShuffleEngine {
     this.executionsPerSecond = rate;
     this.duration = duration;
     this.startTime = Date.now();
+    this.statsAggregator.reset(); // Reset stats on new start
     
     const intervalMs = 1000 / this.executionsPerSecond;
     
@@ -50,12 +52,13 @@ export class ShuffleEngine {
   tick() {
     const shuffled = fisherYatesShuffle(initialDeck);
     this.totalShuffles++;
-    this.statsService.addResult(shuffled);
+    this.statsAggregator.addShuffle(shuffled);
+    this.ndjsonLogger.log({ timestamp: Date.now(), shuffle: shuffled });
     
-    this.io.emit('shuffle-update', {
+    this.io.emit(\'shuffle-update\', {
       execution: this.totalShuffles,
-      order: shuffled.join(','),
-      stats: this.statsService.getSummary()
+      order: shuffled.join(\'\'),
+      stats: this.statsAggregator.getSummary()
     });
   }
 
@@ -67,7 +70,7 @@ export class ShuffleEngine {
   stop() {
     this.pause();
     this.totalShuffles = 0;
-    this.statsService.reset();
-    this.io.emit('shuffle-stopped');
+    this.statsAggregator.reset();
+    this.io.emit(\'shuffle-stopped\');
   }
 }
