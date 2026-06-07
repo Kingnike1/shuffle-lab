@@ -1,4 +1,10 @@
-const socket = io();
+const socket = io({
+    reconnectionAttempts: 5,
+    timeout: 10000
+});
+
+socket.on('connect', () => console.log('Conectado ao servidor Shuffle Lab'));
+socket.on('connect_error', (err) => console.error('Erro de conexão:', err.message));
 
 // DOM Elements
 const rateInput = document.getElementById('rate');

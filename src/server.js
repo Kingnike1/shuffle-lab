@@ -4,6 +4,7 @@ import { Server } from 'socket.io';
 import cors from 'cors';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import fs from 'fs';
 
 import { ShuffleEngine } from './services/shuffleService.js';
 import { StatisticsAggregator } from './services/StatisticsAggregator.js';
@@ -26,9 +27,14 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 const dataPath = path.join(__dirname, 'data');
 
+// Ensure data directory exists
+if (!fs.existsSync(dataPath)) {
+  fs.mkdirSync(dataPath, { recursive: true });
+}
+
 const statsAggregator = new StatisticsAggregator();
-const ndjsonLogger = new NDJSONLogger(dataPath, 'shuffle_history', 100); // 100MB max file size
-const reportPersister = new ReportPersister(statsAggregator, dataPath, 'relatorio.json', 5000); // Save every 5 seconds
+const ndjsonLogger = new NDJSONLogger(dataPath, 'shuffle_history', 100);
+const reportPersister = new ReportPersister(statsAggregator, dataPath, 'relatorio.json', 5000);
 const systemMonitor = new SystemMonitor(dataPath);
 
 const shuffleEngine = new ShuffleEngine(io, statsAggregator, ndjsonLogger);
@@ -100,7 +106,10 @@ app.get('/api/export/report', (req, res) => {
 
 const PORT = process.env.PORT || 3000;
 httpServer.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`\n================================================`);
+  console.log(`  Shuffle Lab Server iniciado com sucesso!`);
+  console.log(`  Acesse: http://localhost:${PORT}`);
+  console.log(`================================================\n`);
 });
 
 // Handle graceful shutdown
