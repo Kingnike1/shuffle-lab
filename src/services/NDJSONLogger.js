@@ -1,5 +1,6 @@
 import { FileRotator } from './FileRotator.js';
 import path from 'path';
+import fs from 'fs/promises';
 
 export class NDJSONLogger {
     constructor(logDirectory, baseFileName = 'shuffle_history', maxSizeMB = 100) {
@@ -17,13 +18,13 @@ export class NDJSONLogger {
 
     // Method to read all NDJSON files and reconstruct history
     async readAllLogs() {
-        const files = await fs.promises.readdir(this.logDirectory);
+        const files = await fs.readdir(this.logDirectory);
         const ndjsonFiles = files.filter(file => file.endsWith('.ndjson')).sort();
         
         let allData = [];
         for (const file of ndjsonFiles) {
             const filePath = path.join(this.logDirectory, file);
-            const content = await fs.promises.readFile(filePath, 'utf8');
+            const content = await fs.readFile(filePath, 'utf8');
             content.split('\n').forEach(line => {
                 if (line.trim()) {
                     try {
